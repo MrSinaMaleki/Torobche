@@ -1,1 +1,7 @@
-print("The beginning of an area.")
+import atexit
+import signal
+
+from routes import router
+
+if __name__ == '__main__':
+    router()
