@@ -15,16 +15,13 @@ def login(route):
         password_inp = input("Please enter password: ")
         assert password_inp, "Password should not be empty !"
 
-        print("Admin procces just begins!")
         admin = SuperUser.get(username=username_inp, password=password_inp)
-        print("This is admin: ", admin)
-        sleep(4)
 
         if admin:
-            Auth.login_status = True
+            Auth.admin_login_status = True
             Auth.user = username_inp
             print(f"\n\nWelcome '{username_inp.title()}' ⭐ ")
-            sleep(4)
+            sleep(2)
         else:
             raise ValueError("Username or password invalid !")
 
@@ -46,5 +43,22 @@ def register(route):
 
 
 def logout(route):
-    print("In Logout Callbacks")
-    Auth.login_status = False
+    Auth.admin_login_status = False
+
+
+def add_url(route):
+    url_address = input("Please enter a URL-Address. ")
+    assert url_address, "URL address can not be empty !"
+
+    url_adder(url=url_address)
+    print(f"Added '{url_address}' to the database successfully!")
+    sleep(1)
+
+
+def delete_url(route):
+    url_address_inp = input("Please enter a URL-Address. ")
+    assert url_address_inp, "URL address can not be empty !"
+    with db_session:
+        Urls.select(lambda p: p.url_address == url_address_inp).delete(bulk=True)
+    print(f"deleted '{url_address_inp}' from the database successfully!")
+    sleep(1)

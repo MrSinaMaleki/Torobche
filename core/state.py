@@ -19,4 +19,5 @@ class RouteStateManager:
 
 
 class Auth:
-    login_status = False
+    admin_login_status = False
+    user_login_status = False
