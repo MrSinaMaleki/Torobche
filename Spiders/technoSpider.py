@@ -86,7 +86,7 @@ def techno_spider(raw_user_input):
     except (ElementNotInteractableException, ElementClickInterceptedException, NoSuchElementException, IndexError,
             StaleElementReferenceException) as e:
         print(e)
-        techno_spider()
+        techno_spider(raw_user_input)
         product_count += 1
 
     finally:

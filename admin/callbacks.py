@@ -49,8 +49,13 @@ def logout(route):
 def add_url(route):
     url_address = input("Please enter a URL-Address. ")
     assert url_address, "URL address can not be empty !"
+    with db_session:
+        user_id = list(select(p.id for p in SuperUser if p.username == Auth.user))
+        print(user_id[0])
 
-    url_adder(url=url_address)
+        present = str(datetime.now())
+        Urls(url_address=url_address, url_owner=user_id[0], url_time_added=present)
+
     print(f"Added '{url_address}' to the database successfully!")
     sleep(1)
 

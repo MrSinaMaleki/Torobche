@@ -4,14 +4,15 @@ from datetime import datetime
 db = Database()
 
 
-class SuperUser(db.Entity):
-    username = Required(str)
-    password = Required(str)
+class Users(db.Entity):
+    user_name = Required(str)
+    user_password = Required(str)
+    favorite = Set('Favorite')
 
 
-class Urls(db.Entity):
-    url_address = Required(str)
-    url_time_added = Required(str)
+class Favorite(db.Entity):
+    f_user = Required(Users)
+    f_products = Required('Products')
 
 
 class Products(db.Entity):
@@ -20,35 +21,39 @@ class Products(db.Entity):
     p_category = Required(str)
     p_url = Required(str)
     p_crawl_time = Required(str)
+    p_seller = Required(str)
+    p_img_url = Required(str)
+    p_description = Optional(str)
     p_last_update = Optional(str)
-    user = Set('Users')
+    user = Set(Favorite)
+    urls = Required('Urls')
 
 
 @db_session
-def product_adder(p_name: str, p_price: str, p_category: str, p_url: str, p_crawl_time: str):
-    Products(p_name=p_name, p_price=p_price, p_category=p_category, p_url = p_url, p_crawl_time= p_crawl_time)
+def product_adder(p_name: str, p_price: str, p_category: str, p_url: str, p_crawl_time: str, p_seller: str,
+                  p_img_url: str):
+    Products(p_name=p_name, p_price=p_price, p_category=p_category, p_url=p_url, p_crawl_time=p_crawl_time,
+             p_seller=p_seller, p_img_url=p_img_url)
 
 
-class Users(db.Entity):
-    user_name = Required(str)
-    user_password = Required(str)
-    products = Set(Products)
+class Urls(db.Entity):
+    url_address = Required(str)
+    url_time_added = Required(str)
+    products = Set('Products')
+    url_owner = Required('SuperUser', reverse="urls")
+
+
+
+
+class SuperUser(db.Entity):
+    username = Required(str)
+    password = Required(str)
+    urls = Set(Urls, reverse="url_owner")
 
 
 @db_session
 def add_superuser(username: str, password: str):
     SuperUser(username=username, password=password)
-
-
-@db_session
-def url_adder(url: str):
-    present = str(datetime.now())
-    Urls(url_address=url, url_time_added=present)
-
-
-# class Url(db.Entity):
-#     url_address = Required(str)
-#     add_date = Required(datetime)
 
 
 db.bind(provider='postgres', user='postgres', password='1234', host='localhost', database='test101')

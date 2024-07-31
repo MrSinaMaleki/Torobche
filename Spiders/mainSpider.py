@@ -16,9 +16,14 @@ def trigger(search_input):
                 for product in techno_info:
                     all_infos.append(product)
                     print(product["name"])
-                    product_adder(p_name=product["name"], p_price=product["price"], p_category=product["category"],
-                                  p_url=product["self_url"],
-                                  p_crawl_time=product["url_crawl_time"])
+
+                    user_id = list(select(p.id for p in Urls if p. url_address == url))
+
+                    Products(p_name=product["name"], p_price=product["price"], p_category=product["category"],
+                             p_url=product["self_url"],
+                             p_crawl_time=product["url_crawl_time"],
+                             p_seller=product["Seller"], p_img_url=product["img_url"],
+                             urls=user_id[0])
 
             elif url == "":
                 pass

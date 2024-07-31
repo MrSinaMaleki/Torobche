@@ -43,7 +43,7 @@ router = Router(
         ),
 
         Route(
-            "Search for",
+            "Search By name",
             condition=lambda: Auth.user_login_status or Auth.admin_login_status,
             callback=Callback('users.callbacks', 'find_products')
         ),
