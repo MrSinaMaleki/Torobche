@@ -56,6 +56,18 @@ def add_superuser(username: str, password: str):
     SuperUser(username=username, password=password)
 
 
+@db_session
+def find_element_name(name_input, msg):
+    res = select(p for p in Products if name_input in p.p_name)[:]
+    if res:
+        print(msg)
+        for product in res:
+            print(
+                f"name:{product.p_name}, price:{product.p_price}, category:{product.p_category} seller:{product.p_seller} \n Url:{product.p_url} \n crawled: {product.p_crawl_time} \n img-url:{product.p_img_url}",
+                product.p_description, end='\n')
+            print("\n")
+
+
 db.bind(provider='postgres', user='postgres', password='1234', host='localhost', database='test101')
 db.generate_mapping(create_tables=True)
 # set_sql_debug(True)
