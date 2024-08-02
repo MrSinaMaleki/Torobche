@@ -16,6 +16,7 @@ final_data = []
 def techno_spider(raw_user_input):
     browser = webdriver.Chrome()
     browser.get("https://www.technolife.ir/")
+    browser.maximize_window()
 
     # raw_user_input = "This is just a test!"
     standard_user_input = raw_user_input.replace(" ", "+")

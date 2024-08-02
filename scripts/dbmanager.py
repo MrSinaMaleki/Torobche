@@ -17,7 +17,7 @@ class Favorite(db.Entity):
 
 class Products(db.Entity):
     p_name = Required(str)
-    p_price = Required(str)
+    p_price = Optional(int)
     p_category = Required(str)
     p_url = Required(str)
     p_crawl_time = Required(str)
@@ -30,7 +30,7 @@ class Products(db.Entity):
 
 
 @db_session
-def product_adder(p_name: str, p_price: str, p_category: str, p_url: str, p_crawl_time: str, p_seller: str,
+def product_adder(p_name: str, p_price: int, p_category: str, p_url: str, p_crawl_time: str, p_seller: str,
                   p_img_url: str):
     Products(p_name=p_name, p_price=p_price, p_category=p_category, p_url=p_url, p_crawl_time=p_crawl_time,
              p_seller=p_seller, p_img_url=p_img_url)
@@ -41,8 +41,6 @@ class Urls(db.Entity):
     url_time_added = Required(str)
     products = Set('Products')
     url_owner = Required('SuperUser', reverse="urls")
-
-
 
 
 class SuperUser(db.Entity):
@@ -59,6 +57,18 @@ def add_superuser(username: str, password: str):
 @db_session
 def find_element_name(name_input, msg):
     res = select(p for p in Products if name_input in p.p_name)[:]
+    if res:
+        print(msg)
+        for product in res:
+            print(
+                f"name:{product.p_name}, price:{product.p_price}, category:{product.p_category} seller:{product.p_seller} \n Url:{product.p_url} \n crawled: {product.p_crawl_time} \n img-url:{product.p_img_url}",
+                product.p_description, end='\n')
+            print("\n")
+
+
+@db_session
+def find_element_category(category_input, msg):
+    res = select(p for p in Products if category_input in p.p_category)[:]
     if res:
         print(msg)
         for product in res:
