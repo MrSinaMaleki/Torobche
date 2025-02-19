@@ -56,7 +56,9 @@ def add_superuser(username: str, password: str):
 
 @db_session
 def find_element_name(name_input, msg):
+
     res = select(p for p in Products if name_input in p.p_name)[:]
+    print(res)
     if res:
         print(msg)
         for product in res:

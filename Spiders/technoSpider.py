@@ -25,11 +25,11 @@ def techno_spider(raw_user_input):
 
     try:
         search_box = browser.find_element(By.CSS_SELECTOR,
-                                          '#__next > div.w-full > header > div > div > div > div > nav > div.transition-all.relative > div > div.h-auto.w-auto > div')
+                                          '#__next > div.w-full > header > div > div > div > div > nav > div.baseModal.relativeBox > div > div.autoBox > div > input')
         search_box.click()
 
         input_box = browser.find_element(By.CSS_SELECTOR,
-                                         '#__next > div.w-full > header > div > div > div > div > nav > div.transition-all.z-\[1001\].relative > div > div.h-auto.w-auto > div > input')
+                                         '#__next > div.w-full > header > div > div > div > div > nav > div.baseModal.baseModalVisible.relativeBox > div > div.autoBox > div > input')
         input_box.send_keys(raw_user_input)
         sleep(1)
 

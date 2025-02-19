@@ -57,6 +57,7 @@ def find_products(route):
             clear()
             print("\n")
             print("Here is all new data + old ones")
+            find_element_name(name_input=name_input, msg="")
         else:
 
             find_element_name(name_input=name_input, msg=" ")
