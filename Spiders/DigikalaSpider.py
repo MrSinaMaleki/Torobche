@@ -11,12 +11,27 @@ from pprint import pprint
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, \
     ElementClickInterceptedException, StaleElementReferenceException
 from selenium.webdriver.common.keys import Keys
-
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+import os
 
 final_data = []
 
 def digikala_spider(raw_user_input):
-    browser = webdriver.Chrome()
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+    chrome_options = Options()
+    chrome_options.add_argument("--ignore-certificate-errors")
+    chrome_options.add_argument("--ignore-ssl-errors")
+    chrome_options.add_argument("--log-level=3")
+    chrome_options.add_argument("--disable-logging")
+    chrome_options.add_argument("--silent")
+    chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+
+    service = Service(log_path=os.devnull)
+
+    browser = webdriver.Chrome(service=service, options=chrome_options)
     browser.get("https://www.digikala.com/")
     browser.maximize_window()
 
@@ -44,6 +59,7 @@ def digikala_spider(raw_user_input):
 
 
     product_urls = [product.get_attribute("href") for product in products][0:5]
+    pr_count = 0
 
     for product_url in product_urls:
         single_data = {"name": None, "price": None, "Seller": None, "Description": None, "category": None,
@@ -52,6 +68,7 @@ def digikala_spider(raw_user_input):
         print("getting url: ", product_url)
         browser.get(product_url)
         sleep(3)
+        pr_count += 1
 
         try:
 
@@ -75,21 +92,27 @@ def digikala_spider(raw_user_input):
             translated_price = raw_price.translate(persian_to_english)
 
             single_data['price'] = int(translated_price.replace(",", ""))
+            print(f"price({pr_count}) ---> {single_data['price']}")
+
 
             seller_element = browser.find_element(By.CSS_SELECTOR,
                                                   'p[class="text-neutral-700 ml-2 text-subtitle"]')
             single_data['Seller'] = seller_element.get_attribute('innerHTML')
+            print(f"seller({pr_count}) ---> {single_data['Seller']}")
 
             name_element = browser.find_element(By.CSS_SELECTOR,
                                                 '#__next > div.h-full.flex.flex-col.bg-neutral-000.items-center > div.grow.bg-neutral-000.flex.flex-col.w-full.items-center.shrink-0 > div.grow.bg-neutral-000.flex.flex-col.w-full.items-center.styles_BaseLayoutDesktop__content__hfHD1.container-4xl-w > div.lg\:px-5 > div.flex.flex-col.lg\:flex-row.overflow-hidden.styles_PdpProductContent__sectionBorder--mobile__J7liJ > div.grow.min-w-0 > div.flex.items-center.w-full.px-5.lg\:px-0 > div > h1')
             single_data['name'] = name_element.get_attribute('innerHTML')
+            print(f"product name({pr_count}) ---> {single_data['name']}")
 
             img_element = browser.find_element(By.CSS_SELECTOR,
                                                '#__next > div.h-full.flex.flex-col.bg-neutral-000.items-center > div.grow.bg-neutral-000.flex.flex-col.w-full.items-center.shrink-0 > div.grow.bg-neutral-000.flex.flex-col.w-full.items-center.styles_BaseLayoutDesktop__content__hfHD1.container-4xl-w > div.lg\:px-5 > div.flex.flex-col.lg\:flex-row.overflow-hidden.styles_PdpProductContent__sectionBorder--mobile__J7liJ > div.lg\:ml-4.shrink-0.flex.flex-col-reverse.lg\:flex-col.styles_InfoSection__rightSection__PiYpa > div.flex.flex-col.items-center.lg\:max-w-92.xl\:max-w-145.lg\:block > div.flex.relative > div.relative.flex.items-center > div > picture > img')
             single_data['img_url'] = img_element.get_attribute('src')
+            print(f"image_url({pr_count}) ---> {single_data['img_url']}")
 
             cat_element = browser.find_element(By.CSS_SELECTOR, '#__next > div.h-full.flex.flex-col.bg-neutral-000.items-center > div.grow.bg-neutral-000.flex.flex-col.w-full.items-center.shrink-0 > div.grow.bg-neutral-000.flex.flex-col.w-full.items-center.styles_BaseLayoutDesktop__content__hfHD1.container-4xl-w > div.lg\:px-5 > div.flex.flex-col.lg\:flex-row.overflow-hidden.styles_PdpProductContent__sectionBorder--mobile__J7liJ > div.grow.min-w-0 > div.flex.items-center.w-full.px-5.lg\:px-0 > div > div > nav > a:nth-child(2) > div > p.text-secondary-500.text-body1-strong')
             single_data['category'] = cat_element.get_attribute('innerHTML')
+            print(f"product category({pr_count}) ---> {single_data['category']}")
 
             try:
                 desc_element = browser.find_element(By.CSS_SELECTOR,
@@ -100,8 +123,10 @@ def digikala_spider(raw_user_input):
 
 
             single_data['url_crawl_time'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            print(f"time({pr_count}) ---> {single_data['url_crawl_time']}")
 
             final_data.append(single_data)
+            print(f"finished crawling product {pr_count}")
         except Exception as e:
             print("Error fetching element:", e)
 
